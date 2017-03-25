@@ -16,7 +16,7 @@ import org.springframework.messaging.support.ChannelInterceptorAdapter;
 public class ClientErrorInterceptor extends ChannelInterceptorAdapter {
 
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel) { //throws Throwable {
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
         if (message.getPayload() instanceof RuntimeExceptionHolder) {
             RuntimeExceptionHolder holder = (RuntimeExceptionHolder) message.getPayload();
             throw holder.getException();

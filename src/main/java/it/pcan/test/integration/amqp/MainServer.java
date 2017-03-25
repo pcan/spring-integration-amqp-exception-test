@@ -20,9 +20,7 @@ public class MainServer {
      */
     public static void main(String[] args) throws Exception {
         try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:/config/serverApplicationContext.xml")) {
-            
-
-            new Scanner(System.in).nextLine();
+            new Scanner(System.in).nextLine(); // Press Enter key to stop
             System.out.println("Done.");
         }
     }

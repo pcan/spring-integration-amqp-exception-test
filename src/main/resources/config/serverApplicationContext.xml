@@ -36,18 +36,7 @@
         </int:interceptors>
     </int:channel>
     
-    <bean id="listenerContainer" class="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer" >
-        <property name="connectionFactory" ref="connectionFactory" />
-        <property name="queueNames">
-            <list>
-                <value>test_queue</value> 
-            </list>
-        </property>
-        <property name="defaultRequeueRejected" value="false" />
-        <property name="recoveryInterval" value="10" />
-    </bean>
-    
-    <int-amqp:inbound-gateway id="amqpInboundGateway" listener-container="listenerContainer"
+    <int-amqp:inbound-gateway id="amqpInboundGateway"  queue-names="test_queue" connection-factory="connectionFactory"
                               request-channel="request-channel" reply-channel="reply-channel" error-channel="error-channel"
                               message-converter="jacksonMessageConverter" />
     
