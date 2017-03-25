@@ -11,9 +11,6 @@
                                addresses="localhost:5672"
                                username="guest" 
                                password="guest"/>
-       
-    <bean id="customJackson2ObjectMapperFactoryBean" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean" lazy-init="true" />
-    
     <rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory"/>
     
     <rabbit:queue declared-by="rabbitAdmin" name="test_queue"/>
