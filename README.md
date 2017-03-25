@@ -13,4 +13,4 @@ Test project for remote exception handling using Spring Integration AMQP. This i
 
 ## Open points
 
-We are waiting for spring-rabbit 2.0.0 that will support direct reply-to with AsyncMessagingTemplate in order to achieve the same feature, but with non-blocking mode.
+We are waiting for spring-rabbit 2.0.0 that will support direct reply-to with AsyncMessagingTemplate in order to achieve the same feature, but with non-blocking mode (see [AMQP-616](https://jira.spring.io/browse/AMQP-616)).
