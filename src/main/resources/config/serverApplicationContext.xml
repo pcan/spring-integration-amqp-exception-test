@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+            http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+        
+    <import resource="classpath:/config/spring-rabbit.xml"/>
+  
+    <int:logging-channel-adapter id="loggingChannel" level="INFO" log-full-message="true"/>
+   
+    <int:channel id="request-channel">
+        <int:interceptors>
+            <int:wire-tap channel="loggingChannel"/>
+        </int:interceptors>
+    </int:channel>    
+    
+    <int:channel id="reply-channel">
+        <int:queue />
+        <int:interceptors>
+            <int:wire-tap channel="loggingChannel"/>
+        </int:interceptors>
+    </int:channel>	
+    
+    <int:channel id="error-channel">
+        <int:interceptors>
+            <int:wire-tap channel="loggingChannel"/>
+        </int:interceptors>
+    </int:channel>
+    
+    <bean id="listenerContainer" class="org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer" >
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="queueNames">
+            <list>
+                <value>test_queue</value> 
+            </list>
+        </property>
+        <property name="defaultRequeueRejected" value="false" />
+        <property name="recoveryInterval" value="10" />
+    </bean>
+    
+    <int-amqp:inbound-gateway id="amqpInboundGateway" listener-container="listenerContainer"
+                              request-channel="request-channel" reply-channel="reply-channel" error-channel="error-channel"
+                              message-converter="jacksonMessageConverter" />
+    
+    <int:service-activator input-channel="request-channel" output-channel="reply-channel" >
+        <bean class="it.pcan.test.integration.amqp.TestService"/>
+    </int:service-activator>
+    
+    <int:service-activator input-channel="error-channel">
+        <bean class="it.pcan.test.integration.amqp.ErrorHandler"/>
+    </int:service-activator>
+    
+    
+</beans>

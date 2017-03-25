@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-amqp="http://www.springframework.org/schema/integration/amqp"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+            http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/amqp http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
+            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+        
+    <import resource="classpath:/config/spring-rabbit.xml"/>
+  
+    <int:logging-channel-adapter id="loggingChannel" level="INFO" log-full-message="true"/>
+            
+    <int:channel id="request-channel" >
+        <int:interceptors>
+            <int:wire-tap channel="loggingChannel"/>
+        </int:interceptors>
+    </int:channel>
+    
+    <int:channel id="reply-channel">
+        <int:interceptors>
+            <int:wire-tap channel="loggingChannel"/>
+            <bean class="it.pcan.test.integration.amqp.ClientErrorInterceptor"/>
+        </int:interceptors>
+    </int:channel>	
+  
+    <!-- 
+        usually we don't need reply channel (when direct reply-to is enough), but we add it for exception handling path.
+        see point 2: http://forum.spring.io/forum/spring-projects/integration/amqp/122979-rpc-style-exception-handling-with-spring-integration-rabbitmq?p=600965#post600965
+    -->
+    
+    <int-amqp:outbound-gateway id="amqpOutboundGateway" 
+                               request-channel="request-channel" 
+                               reply-channel="reply-channel"
+                               exchange-name="" routing-key="test_queue" 
+                               amqp-template="rabbitTemplate"/>
+
+    
+    <int:gateway id="myGateway" service-interface="it.pcan.test.integration.amqp.ClientGateway" default-request-channel="request-channel" default-reply-channel="reply-channel"/>
+
+    
+</beans>

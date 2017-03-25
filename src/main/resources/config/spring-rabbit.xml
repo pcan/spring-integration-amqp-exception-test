@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.6.xsd">
+
+        
+    
+    <rabbit:connection-factory id="connectionFactory" 
+                               addresses="localhost:5672"
+                               username="guest" 
+                               password="guest"/>
+       
+    <bean id="customJackson2ObjectMapperFactoryBean" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean" lazy-init="true" />
+    
+    <rabbit:admin id="rabbitAdmin" connection-factory="connectionFactory"/>
+    
+    <rabbit:queue declared-by="rabbitAdmin" name="test_queue"/>
+    
+    <bean id="jacksonMessageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter" />
+
+    <rabbit:template id="rabbitTemplate" connection-factory="connectionFactory"
+                     reply-timeout="60000" 
+                     channel-transacted="false" message-converter="jacksonMessageConverter" />    
+       
+</beans>
