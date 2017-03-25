@@ -2,6 +2,10 @@
 
 Test project for remote exception handling using Spring Integration AMQP. This implementation uses direct reply-to mechanism in order to decouple client and server.
 
+## Build and run
+
+Build with `mvn clean install` and run `MainServer` (you can stop it with Enter key), then `MainClient`. The client will send a "valid" request first, then an invalid one that will raise an exception on the server. The exception will be wrapped in a response message and will be rethrown on the client side, just like a RPC.
+
 ## Server config
 
 - `error-channel`: this channel catches errors and forward them to the `ErrorHandler`.
