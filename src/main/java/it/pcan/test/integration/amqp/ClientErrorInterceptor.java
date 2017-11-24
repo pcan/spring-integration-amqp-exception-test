@@ -5,9 +5,13 @@
  */
 package it.pcan.test.integration.amqp;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
+import org.springframework.messaging.support.GenericMessage;
 
 /**
  *
@@ -20,6 +24,15 @@ public class ClientErrorInterceptor extends ChannelInterceptorAdapter {
         if (message.getPayload() instanceof RuntimeExceptionHolder) {
             RuntimeExceptionHolder holder = (RuntimeExceptionHolder) message.getPayload();
             throw holder.getException();
+        }
+        if (message.getPayload() instanceof NullObject) {
+            /**
+             * @see NullReturningHandlerAdvice
+             */
+            MessageHeaders headers = message.getHeaders();
+            Map<String, Object> newHeaders = new HashMap<>(headers);
+            newHeaders.put("replyChannel", "nullChannel");
+            return new GenericMessage(message.getPayload(), newHeaders);
         }
         return message;
     }

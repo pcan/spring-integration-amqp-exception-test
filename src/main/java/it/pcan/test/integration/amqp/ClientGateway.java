@@ -16,4 +16,7 @@ public interface ClientGateway {
     @Gateway
     public TestBean process(TestBean bean);
     
+    @Gateway
+    public void process2(DummyBean bean);
+    
 }

@@ -32,6 +32,8 @@ public class MainClient {
             } catch (Exception ex) {
                 System.out.println("Exception received " + ex);
             }
+            gateway.process2(new DummyBean());
+            
             System.out.println("Done.");
         }
     }

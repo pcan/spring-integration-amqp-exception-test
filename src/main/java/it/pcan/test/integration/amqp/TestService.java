@@ -23,4 +23,9 @@ public class TestService {
         return new TestBean(bean.getId() * 2);
     }
     
+    
+    @ServiceActivator
+    public void handleRequest(DummyBean bean) {
+        System.out.println("Received DummyBean request: " + bean);
+    }
 }

@@ -41,6 +41,10 @@
                               message-converter="jacksonMessageConverter" />
     
     <int:service-activator input-channel="request-channel" output-channel="reply-channel" >
+        <int:request-handler-advice-chain >
+            <bean class="it.pcan.test.integration.amqp.NullReturningHandlerAdvice"/>
+        </int:request-handler-advice-chain>
+        
         <bean class="it.pcan.test.integration.amqp.TestService"/>
     </int:service-activator>
     
